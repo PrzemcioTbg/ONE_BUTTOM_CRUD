@@ -10,6 +10,8 @@ var firebaseConfig = {
  };
  // Initialize Firebase
  firebase.initializeApp(firebaseConfig);
+ firebase.analytics();
+
 
 
  var d = new Date();
@@ -21,8 +23,39 @@ var firebaseConfig = {
 
  document.getElementById("form").addEventListener("submit", (e)=>{
    var task = document.getElementById('task').value;
-   var description = document.getElementById('description').value;
    e.preventDefault();
-   console.log(task + description);
+   createTask(task);
    form.reset();
  });
+
+ function createTask(taskName){
+   console.log(counter);
+   counter+=1;
+   console.log(counter);
+   console.lo
+   var task = {
+     id : counter,
+     task : taskName
+   }
+   let db = firebase.database().ref("tasks/"+ counter);
+   db.set(task);
+   document.getElementById("cardSection").innerHTML='';
+   readTask();
+ }
+
+ function readTask(){
+    var task = firebase.database().ref("tasks/");
+    task.on("child_added", function(data){
+      var taskValue = data.val();
+      document.getElementById("cardSection").innerHTML+=`
+      <div class = "card mb-3">
+        <div class ="card-body">
+          <h5 class = "card-title">${taskValue.task}</h5>
+          <button type = "submit" style ="color:black" class = "btn btr-warning"
+          onclick = "updateTask(${taskValue.id}, '${taskValue.task}')">
+          Edit Task</button>
+        </div>
+      </div>
+      `
+    });
+}
